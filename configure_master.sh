@@ -7,12 +7,9 @@ masterIp=192.168.7.186
 apiServer=https://${masterIp}:6443
 hostname=$(hostname)
 
-# configute kubelet and run
+# configure kubelet
 awk '/ExecStart=/ && !x {print "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs\""; x=1} 1' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf > tmp && mv tmp /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sed 's/\$KUBELET_CERTIFICATE_ARGS/& \$KUBELET_CGROUP_ARGS/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-systemctl daemon-reload
-systemctl enable kubelet
-systemctl start kubelet
+sed -i 's/\$KUBELET_CERTIFICATE_ARGS/& \$KUBELET_CGROUP_ARGS/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 # configure cni
 cat << EOF > /etc/openvswitch/ovn_k8s.conf
@@ -32,8 +29,12 @@ EOF
 mkdir -p /etc/cni/net.d/
 echo '{"name":"ovn-kubernetes", "type":"ovn-k8s-cni-overlay"}' > /etc/cni/net.d/10-ovn-kubernetes.conf
 
+# run kubelet
+systemctl daemon-reload
+systemctl enable kubelet
+systemctl start kubelet
 
-# configure ovn
+# configure ovn nb and sb ports
 ovn-nbctl set-connection ptcp:6641
 ovn-sbctl set-connection ptcp:6642
 
