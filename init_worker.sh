@@ -49,7 +49,7 @@ apt-get install python-six openssl python-pip -y
 apt-get install openvswitch-datapath-dkms -y
 apt-get install openvswitch-switch openvswitch-common -y
 -H pip install ovs
-apt-get install ovn-central ovn-common ovn-host -y
+apt-get install ovn-common ovn-host -y
 
 # install ovnkube
 cd /opt/
