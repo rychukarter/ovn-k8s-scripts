@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# preconfig
-# echo 'pagoda ALL:(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
 # turn off swap
 swapname=$(systemctl --type swap | grep .swap | awk 'NR%3==2{print $1}')
 systemctl mask $swapname
@@ -57,5 +54,3 @@ git clone https://github.com/openvswitch/ovn-kubernetes
 cd ovn-kubernetes/go-controller
 make
 make install
-
-# run
