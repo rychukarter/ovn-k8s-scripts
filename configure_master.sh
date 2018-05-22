@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # set kubernetes network variables
-podNetworkCidr=172.16.0.0/16
-serviceCidr=10.96.0.0/24
+podNetworkCidr=10.48.0.0/16
+serviceCidr=172.16.1.0/24
 masterIp=192.168.7.186
 apiServer=https://${masterIp}:6443
 hostname=$(hostname)
@@ -10,6 +10,7 @@ hostname=$(hostname)
 # configure kubelet
 awk '/ExecStart=/ && !x {print "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs\""; x=1} 1' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf > tmp && mv tmp /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -i 's/\$KUBELET_CERTIFICATE_ARGS/& \$KUBELET_CGROUP_ARGS/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sed -i 's/--cluster-dns=10.96.0.10/--cluster-dns=172.16.1.10/g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 # configure cni
 cat << EOF > /etc/openvswitch/ovn_k8s.conf
