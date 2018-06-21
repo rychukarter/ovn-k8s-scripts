@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Run this script only after init_master.sh
 # set kubernetes network variables
 podNetworkCidr=10.48.0.0/16
 serviceCidr=172.16.1.0/24
@@ -112,6 +113,7 @@ Documentation=http://kubernetes.io/docs/
 [Service]
 ExecStart=/usr/bin/ovnkube -init-master ${hostname} \
                            -init-node ${hostname} \
+                           -init-gateways -gateway-localnet \
                            -k8s-cacert /etc/kubernetes/pki/ca.crt \
                            -k8s-token "${token}" \
                            -nodeport \

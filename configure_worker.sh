@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Run this script only after init_worker.sh -> kubeadm join command
+
 # set kubernetes network variables
 podNetworkCidr=10.48.0.0/16
 serviceCidr=172.16.1.0/24
@@ -14,6 +16,10 @@ token=
 awk '/ExecStart=/ && !x {print "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs\""; x=1} 1' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf > tmp && mv tmp /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -i 's/\$KUBELET_CERTIFICATE_ARGS/& \$KUBELET_CGROUP_ARGS/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -i 's/--cluster-dns=10.96.0.10/--cluster-dns=172.16.1.10/g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+# restart kublet
+systemctl daemon-reload
+systemctl restart kubelet
 
 # prevent egg-chicken problem after reboot
 echo "OPTIONS=--delete-transient-ports" >> /etc/default/openvswitch-switch
