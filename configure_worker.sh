@@ -22,7 +22,7 @@ systemctl daemon-reload
 systemctl restart kubelet
 
 # prevent egg-chicken problem after reboot
-echo "OPTIONS=--delete-transient-ports" >> /etc/default/openvswitch-switch
+echo "OPTIONS=--delete-transient-ports" >> /etc/default/openvswitch
 
 # configure cni
 cat << EOF > /etc/openvswitch/ovn_k8s.conf
