@@ -11,7 +11,7 @@ hostname=$(hostname)
 # configure kubelet
 awk '/ExecStart=/ && !x {print "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs\""; x=1} 1' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf > tmp && mv tmp /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -i 's/\$KUBELET_CERTIFICATE_ARGS/& \$KUBELET_CGROUP_ARGS/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sed -i 's/--cluster-dns=10.96.0.10/--cluster-dns=172.16.1.10/g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sed -i 's/- 10.96.0.10/- 172.16.1.10/g' /var/lib/kubelet/config.yaml
 
 # configure cni
 cat << EOF > /etc/openvswitch/ovn_k8s.conf
