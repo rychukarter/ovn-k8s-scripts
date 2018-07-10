@@ -11,7 +11,6 @@ hostname=$(hostname)
 # configure kubelet
 awk '/ExecStart=/ && !x {print "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs\""; x=1} 1' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf > tmp && mv tmp /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -i 's/\$KUBELET_CERTIFICATE_ARGS/& \$KUBELET_CGROUP_ARGS/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sed -i 's/- 10.96.0.10/- 172.16.1.10/g' /var/lib/kubelet/config.yaml
 
 # configure cni
 cat << EOF > /etc/openvswitch/ovn_k8s.conf
@@ -48,8 +47,11 @@ mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -au):$(id -g) $HOME/.kube/config
 
-# create rbac for ovn
+# set proper DNS
+sed -i 's/- 10.96.0.10/- 172.16.1.10/g' /var/lib/kubelet/config.yaml
+systemctl restart kubelet
 
+# create rbac for ovn
 cat > /opt/ovn-kubernetes-rbac.yaml <<- END
 ---
 apiVersion: v1
