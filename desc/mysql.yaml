@@ -40,11 +40,16 @@ spec:
         - containerPort: 3306
           name: mysql
         volumeMounts:
-        - name: test
+        - name: init-dir
           mountPath: /docker-entrypoint-initdb.d
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
       volumes:
-      - name: test
+      - name: init-dir
         hostPath:
-          path: /home/pagoda/k8s/mysql/docker-entrypoint.d
+          path: /k8s/mysql/docker-entrypoint-initdb.d
           type: Directory
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
 

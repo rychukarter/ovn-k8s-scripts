@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oaisim-waw
+spec:
+  hostname: oaisim-waw
+  hostNetwork: true
+  dnsPolicy: "ClusterFirstWithHostNet"
+  containers:
+  - image: index.docker.io/rychukarter/oai_oaisim:1.0.3
+    name: oai-oaisim-waw
+    securityContext:
+      privileged: true
+    command: ["sleep", "90000"]
+    env:
+    - name: MME_HOST
+      value: mme-waw
+    - name: IFACE_S1
+      value: k8s-pagoda-lapt
+    - name: IFACE_S1U
+      value: k8s-pagoda-lapt
+    - name: PORT_S1U 
+      value: "2152"
+    - name: ID_ENB
+      value: "0xe00"
+    - name: TAC
+      value: "1"
+    - name: MCC
+      value: "208"
+    - name: MNC
+      value: "93"
+    volumeMounts:
+    - name: kernel-modules
+      mountPath: /lib/modules
+    - name: etc-network
+      mountPath: /etc/network
+  volumes:
+  - name: kernel-modules
+    hostPath:
+      path: /lib/modules
+      type: Directory
+  - name: etc-network
+    hostPath:
+      path: /etc/network
+      type: Directory

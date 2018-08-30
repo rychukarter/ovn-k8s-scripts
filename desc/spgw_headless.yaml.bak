@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spgw-waw
+spec:
+  ports:
+  - port: 2152
+    name: s1u
+  - port: 2123
+    name: s11
+  selector:
+    app: spgw-waw
+  clusterIP: None
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spgw-waw
+  selector:
+    app: spgw-waw
+spec:
+  hostname: spgw-waw
+  containers:
+  - image: index.docker.io/rychukarter/oai_spgw:3.0.1
+    name: spgw-waw
+#    command: ["sleep", "9000"]
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN", "SYS_ADMIN", "SYS_MODULE"]
+    env:
+    - name: IFACE_S11
+      value: eth0
+    - name: IFACE_S1U
+      value: eth0
+    - name: S1U_PORT
+      value: "2152"
+    - name: IFACE_SGI
+      value: eth0
+    - name: PGW_MASQ_SGI
+      value: "yes"
+    - name: PGW_CLAMPING
+      value: "no"
+    - name: UE_ADDR_POOL
+      value: "173.10.0.0/16"
+    - name: UE_MTU
+      value: "1500"
+    ports:
+    - containerPort: 2152
+    - containerPort: 2123
+    volumeMounts:
+    - name: kernel-modules
+      mountPath: /lib/modules
+  volumes:
+  - name: kernel-modules
+    hostPath:
+      path: /lib/modules
+      type: Directory
+

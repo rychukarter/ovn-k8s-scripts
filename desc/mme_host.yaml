@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mme-waw
+spec:
+  ports:
+  - port: 3870
+    name: fd-primary
+  - port: 5870
+    name: fd-secondary
+  - port: 36412
+    nodePort: 36412
+    name: s1ap
+  - port: 2123
+    name: s11
+  selector:
+    app: mme-waw
+  type: NodePort
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mme-waw
+  labels:
+    name: mme-waw
+spec:
+  hostname: mme-waw
+  hostNetwork: true
+  containers:
+  - image: index.docker.io/rychukarter/oai_mme:3.0.1
+    name: oai-mme-waw
+    command: ["sleep", "9000"]
+    env:
+    - name: MME_HOST
+      value: mme-waw
+    - name: MME_REALM
+      value: openair4G.eur
+    - name: HSS_HOST
+      value: hss-waw
+    - name: HSS_REALM
+      value: openair4G.eur
+    - name: SPGW_HOST
+      value: hss-waw
+    - name: IFACE_S1
+      value: brenp0s31f6
+    - name: IFACE_S11
+      value: brenp0s31f6
+    ports:
+    - containerPort: 3870
+    - containerPort: 5870
+    - containerPort: 36412
+    - containerPort: 2123

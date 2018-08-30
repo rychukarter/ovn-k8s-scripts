@@ -4,32 +4,44 @@ metadata:
   name: hss-waw
 spec:
   ports:
+  - port: 3868
+    name: primary-fd
   - port: 5868
+    name: secondary-fd
   selector:
     app: hss-waw
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: hss-waw
-  labels:
-    name: hss-waw
 spec:
-  hostname: hss-waw
-  containers:
-  - image: index.docker.io/rychukarter/oai_hss:3.0.1
-    name: oai-hss-waw
-    env:
-    - name: HSS_HOST
-      value: hss-waw
-    - name: HSS_REALM
-      value: openair4G.eur
-    - name: MYSQL_USER
-      value: oai-db
-    - name: MYSQL_USER_PASSWORD    
-      value: oai-db
-    - name: MYSQL_DATABASE
-      value: oai_db
-    ports:
-    - containerPort: 3868
-    - containerPort: 5868
+  selector:
+    matchLabels:
+      app: hss-waw
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hss-waw
+    spec:
+      containers:
+      - image: index.docker.io/rychukarter/oai_hss:3.0.2
+        name: oai-hss-waw
+        env:
+        - name: MYSQL_HOST
+          value: mysql
+        - name: HSS_HOST
+          value: hss-waw
+        - name: HSS_REALM
+          value: openair4G.eur
+        - name: MYSQL_USER
+          value: oai-db
+        - name: MYSQL_USER_PASSWORD    
+          value: oai-db
+        - name: MYSQL_DATABASE
+          value: oai_db
+        ports:
+        - containerPort: 3868
+        - containerPort: 5868
