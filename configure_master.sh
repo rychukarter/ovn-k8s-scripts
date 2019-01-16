@@ -4,7 +4,7 @@
 # set kubernetes network variables
 podNetworkCidr=10.48.0.0/16
 serviceCidr=172.16.1.0/24
-masterIp=192.168.7.186
+masterIp=192.168.7.103
 apiServer=https://${masterIp}:6443
 hostname=$(hostname)
 
